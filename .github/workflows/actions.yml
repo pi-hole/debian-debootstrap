@@ -10,7 +10,7 @@ jobs:
       matrix:
         QEMU_VER: [v6.0.0-1]
         DOCKER_REPO: [docker.io/pihole/debian-debootstrap]
-        VERSION: [stretch, buster]
+        VERSION: [stretch, buster, bullseye]
         UNAME_ARCH: [arm64, armv7l, i386]
         include:
           - {ARCH: arm64,     QEMU_ARCH: aarch64, UNAME_ARCH: arm64}
