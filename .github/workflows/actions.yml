@@ -16,6 +16,8 @@ jobs:
           - {ARCH: arm64,     QEMU_ARCH: aarch64, UNAME_ARCH: arm64}
           - {ARCH: armhf,     QEMU_ARCH: arm,     UNAME_ARCH: armv7l}
           - {ARCH: i386,      QEMU_ARCH: i386,    UNAME_ARCH: i386}
+        exclude:
+          - {VERSION: bullseye, UNAME_ARCH: arm64}
 
     steps:
       - uses: actions/checkout@v2
