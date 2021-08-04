@@ -1,15 +1,15 @@
 name: actions
 on:
   push:
-  schedule:
-    - cron: '0 0 * * 0'
+    branches:
+      - master
 jobs:
   debian-debootstrap:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     strategy:
       matrix:
         QEMU_VER: [v6.0.0-1]
-        DOCKER_REPO: [docker.io/multiarch/debian-debootstrap]
+        DOCKER_REPO: [docker.io/pihole/debian-debootstrap]
         VERSION: [sid, stretch, buster, bullseye]
         UNAME_ARCH: [x86_64, arm64, armel, armv7l, i386, mipsel, mips64el, ppc64el, s390x]
         include:
@@ -25,15 +25,16 @@ jobs:
         exclude:
           - {VERSION: sid,      UNAME_ARCH: arm64}
           - {VERSION: bullseye, UNAME_ARCH: arm64}
+
     steps:
       - uses: actions/checkout@v2
       - name: Build
         run: |
-          sudo add-apt-repository 'deb http://archive.ubuntu.com/ubuntu focal main universe'
+          sudo add-apt-repository 'deb http://archive.ubuntu.com/ubuntu bionic main universe'
           sudo apt-get update && sudo apt-get install -y qemu-user-static debootstrap
           ./update.sh -a ${{ matrix.ARCH }} -v ${{ matrix.VERSION }} -q ${{ matrix.QEMU_ARCH }} -u ${{ matrix.QEMU_VER }} -d ${{ matrix.DOCKER_REPO }} -o ${{ matrix.UNAME_ARCH }}
       - name: Publish
         if: github.ref == 'refs/heads/master'
         run: |
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
+          docker login -u ${{ secrets.DOCKERHUB_USER }} -p ${{ secrets.DOCKERHUB_PASS }}
           docker push -a ${{ matrix.DOCKER_REPO }}
