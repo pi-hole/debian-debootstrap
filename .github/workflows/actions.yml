@@ -5,7 +5,7 @@ on:
       - master
 jobs:
   debian-debootstrap:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         QEMU_VER: [v6.0.0-1]
@@ -16,13 +16,13 @@ jobs:
           - {ARCH: arm64,     QEMU_ARCH: aarch64, UNAME_ARCH: arm64}
           - {ARCH: armhf,     QEMU_ARCH: arm,     UNAME_ARCH: armv7l}
           - {ARCH: i386,      QEMU_ARCH: i386,    UNAME_ARCH: i386}
-        exclude:          
-          - {VERSION: bullseye, UNAME_ARCH: arm64}
+        # exclude:
+        #   - {VERSION: bullseye, UNAME_ARCH: arm64}
     steps:
       - uses: actions/checkout@v2
       - name: Build
         run: |
-          sudo add-apt-repository 'deb http://archive.ubuntu.com/ubuntu bionic main universe'
+          sudo add-apt-repository 'deb http://archive.ubuntu.com/ubuntu hirsute main universe'
           sudo apt-get update && sudo apt-get install -y qemu-user-static debootstrap
           ./update.sh -a ${{ matrix.ARCH }} -v ${{ matrix.VERSION }} -q ${{ matrix.QEMU_ARCH }} -u ${{ matrix.QEMU_VER }} -d ${{ matrix.DOCKER_REPO }} -o ${{ matrix.UNAME_ARCH }}
       - name: Publish
